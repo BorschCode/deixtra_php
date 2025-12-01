@@ -18,7 +18,7 @@ class Dijkstra
         $this->init();
         $this->esum[$frNode] = 0;
 
-        while ($currNode = $this->findNearestUnusedNode()){
+        while (($currNode = $this->findNearestUnusedNode()) !== ''){
             $this->setEsumToNextNodes($currNode);
         }
         return $this->restorePath($frNode,$toNode);
@@ -62,8 +62,15 @@ class Dijkstra
 
     public function restorePath(string $frNode, string $toNode): string
     {
+        if (!isset($this->path[$toNode])) {
+            throw new Exception("Node '$toNode' is not reachable from '$frNode'");
+        }
+        
         $path = $toNode;
         while ($toNode != $frNode){
+            if (!isset($this->path[$toNode]) || $this->path[$toNode] === '') {
+                throw new Exception("No path found from '$frNode' to '$toNode'");
+            }
             $toNode = $this->path[$toNode];
             $path = $toNode . $path;
         }
